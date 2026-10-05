@@ -1,5 +1,16 @@
 import type { Order, OrderTopping } from '@/entities/order';
-import { Paper, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
+import {
+  Paper,
+  Stack,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Typography,
+} from '@mui/material';
+import { useState } from 'react';
 
 interface OrderListProps {
   orders: Order[];
@@ -7,60 +18,81 @@ interface OrderListProps {
 }
 
 export const OrderList = ({ orders, orderToppings }: OrderListProps) => {
+  const [selectedOrderId, setSelectedOrderId] = useState<string | null>(null);
+  const selectedOrder = orders.find((order) => order.id === selectedOrderId) ?? orders[0];
+  const selectedOrderToppings = orderToppings.filter((topping) => topping.orderId === selectedOrder?.id);
+
   return (
     <Stack direction='row' spacing={2}>
-      {/* 注文一覧 */}
-
-      <TableContainer component={Paper}>
-        <Table>
-          <TableHead>
-            <TableRow>
-              <TableCell>名称</TableCell>
-              <TableCell>小計</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {orders.length === 0 ? (
+      <Stack spacing={1} sx={{ flex: 1, minWidth: 0 }}>
+        <Typography variant='h6' component='h2'>
+          注文一覧
+        </Typography>
+        <TableContainer component={Paper}>
+          <Table>
+            <TableHead>
               <TableRow>
-                <TableCell colSpan={2}>注文がありません</TableCell>
+                <TableCell>名称</TableCell>
+                <TableCell>小計</TableCell>
               </TableRow>
-            ) : (
-              orders.map((order) => (
-                <TableRow key={order.id}>
-                  <TableCell>{order.pizzaName}</TableCell>
-                  <TableCell>{order.pizzaPrice}</TableCell>
+            </TableHead>
+            <TableBody>
+              {orders.length === 0 ? (
+                <TableRow>
+                  <TableCell colSpan={2}>注文がありません</TableCell>
                 </TableRow>
-              ))
-            )}
-          </TableBody>
-        </Table>
-      </TableContainer>
+              ) : (
+                orders.map((order) => (
+                  <TableRow
+                    key={order.id}
+                    hover
+                    selected={order.id === selectedOrder?.id}
+                    sx={{ cursor: 'pointer' }}
+                    onClick={() => setSelectedOrderId(order.id)}
+                  >
+                    <TableCell>{order.pizzaName}</TableCell>
+                    <TableCell>{order.pizzaPrice}</TableCell>
+                  </TableRow>
+                ))
+              )}
+            </TableBody>
+          </Table>
+        </TableContainer>
+      </Stack>
 
-      {/* 詳細 */}
-      <TableContainer component={Paper}>
-        <Table>
-          <TableHead>
-            <TableRow>
-              <TableCell>名称</TableCell>
-              <TableCell>値段</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {orderToppings.length === 0 ? (
+      <Stack spacing={1} sx={{ flex: 1, minWidth: 0 }}>
+        <Typography variant='h6' component='h2'>
+          詳細
+        </Typography>
+        <TableContainer component={Paper}>
+          <Table>
+            <TableHead>
               <TableRow>
-                <TableCell colSpan={2}>トッピングがありません</TableCell>
+                <TableCell>名称</TableCell>
+                <TableCell>値段</TableCell>
               </TableRow>
-            ) : (
-              orderToppings.map((order) => (
-                <TableRow key={order.id}>
-                  <TableCell>{order.toppingName}</TableCell>
-                  <TableCell>{order.toppingPrice}</TableCell>
+            </TableHead>
+            <TableBody>
+              {!selectedOrder ? (
+                <TableRow>
+                  <TableCell colSpan={2}>注文を選択してください</TableCell>
                 </TableRow>
-              ))
-            )}
-          </TableBody>
-        </Table>
-      </TableContainer>
+              ) : selectedOrderToppings.length === 0 ? (
+                <TableRow>
+                  <TableCell colSpan={2}>トッピングがありません</TableCell>
+                </TableRow>
+              ) : (
+                selectedOrderToppings.map((topping) => (
+                  <TableRow key={topping.id}>
+                    <TableCell>{topping.toppingName}</TableCell>
+                    <TableCell>{topping.toppingPrice}</TableCell>
+                  </TableRow>
+                ))
+              )}
+            </TableBody>
+          </Table>
+        </TableContainer>
+      </Stack>
     </Stack>
   );
 };
