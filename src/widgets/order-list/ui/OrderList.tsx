@@ -10,6 +10,7 @@ export const OrderList = ({ orders, orderToppings }: OrderListProps) => {
   return (
     <Stack direction='row' spacing={2}>
       {/* 注文一覧 */}
+
       <TableContainer component={Paper}>
         <Table>
           <TableHead>

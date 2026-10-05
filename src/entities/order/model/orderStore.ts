@@ -10,7 +10,7 @@ type OrderState = {
 };
 
 type OrderActions = {
-  addOrder: (input: OrderInput) => void;
+  addOrder: (input: OrderInput) => string;
   // 追加予定
   // updateOrder: (id: string, input:OrderInput) => void;
   // cancelOrder: (id: string) => void;
@@ -23,8 +23,10 @@ export const useOrderStore = create<OrderState & OrderActions>()(
       orders: [],
       addOrder: (input) => {
         const now = new Date().toISOString();
-        const order: Order = { ...input, id: crypto.randomUUID(), isCancel: false, createdAt: now, updatedAt: now };
+        const id = crypto.randomUUID();
+        const order: Order = { ...input, id, isCancel: false, createdAt: now, updatedAt: now };
         set((state) => ({ orders: [order, ...state.orders] }));
+        return id;
       },
       // 追加予定
       // updateOrder
