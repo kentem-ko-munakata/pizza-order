@@ -11,6 +11,8 @@ export const MainPage = () => {
   const addOrder = useOrderStore((state) => state.addOrder);
   const orderToppings = useOrderToppingStore((state) => state.orderToppings);
   const addOrderTopping = useOrderToppingStore((state) => state.addOrderTopping);
+
+  // 注文追加モーダル開閉用
   const [isAddOrderModalOpen, setIsAddOrderModalOpen] = useState(false);
 
   return (
@@ -23,6 +25,7 @@ export const MainPage = () => {
         <OrderList orders={orders} orderToppings={orderToppings} />
         {/* 合計表示 */}
       </Stack>
+      {/* 注文追加モーダル */}
       <AddOrderFormModal
         open={isAddOrderModalOpen}
         onClose={() => setIsAddOrderModalOpen(false)}
