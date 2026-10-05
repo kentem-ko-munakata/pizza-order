@@ -16,7 +16,7 @@
   - 取り消しボタン
   - 復元ボタン
 
-[メイン画面](./public/MainPage.png)
+![メイン画面](./public/MainPage.png)
 
 ### 注文追加モーダル(AddOrderModal)
 
@@ -24,7 +24,7 @@
 - トッピング一覧（名称・価格）
   - 各ピザのデフォルトトッピングはチェック済みとし、変更不可・0円表示とする
 
-[注文追加モーダル](./public/AddOrderModal.png)
+![注文追加モーダル](./public/AddOrderModal.png)
 
 ## データ
 
