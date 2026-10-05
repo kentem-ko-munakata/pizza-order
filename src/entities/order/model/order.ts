@@ -1,12 +1,12 @@
-import type { Pizza } from '@/entities/pizza';
-import type { Topping } from '@/entities/topping';
+import { pizzaSchema } from '@/entities/pizza';
+import { toppingSchema } from '@/entities/topping';
 import { z } from 'zod';
 
 export const orderSchema = z.object({
   id: z.string(),
-  pizza: z.custom<Pizza>,
-  toppings: z.custom<Topping>,
-  isCancel: z.boolean,
+  pizza: pizzaSchema,
+  toppings: toppingSchema,
+  isCancel: z.boolean(),
   createdAt: z.string(),
   updatedAt: z.string(),
 });
