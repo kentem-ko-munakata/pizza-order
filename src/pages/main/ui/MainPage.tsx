@@ -1,6 +1,6 @@
 import { useOrderStore } from '@/entities/order/index';
 import { useOrderToppingStore } from '@/entities/order/index';
-import { OrderControl } from '@/widgets/order-control/ui/OrderControl';
+import { OrderControl } from '@/widgets/order-control';
 import { OrderList } from '@/widgets/order-list';
 import { Container, Stack, Typography } from '@mui/material';
 import { useState } from 'react';

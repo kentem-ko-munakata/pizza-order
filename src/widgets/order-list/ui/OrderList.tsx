@@ -41,7 +41,7 @@ export const OrderList = ({ orders, orderToppings, selectedOrderId, onSelectOrde
             <TableBody>
               {orders.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={2}>注文がありません</TableCell>
+                  <TableCell colSpan={3}>注文がありません</TableCell>
                 </TableRow>
               ) : (
                 orders.map((order) => (
@@ -54,7 +54,6 @@ export const OrderList = ({ orders, orderToppings, selectedOrderId, onSelectOrde
                   >
                     <TableCell>{order.pizzaName}</TableCell>
                     {/* ステータス状況 */}
-
                     <TableCell>
                       <OrderStatusChip status={order.isCancel} />
                     </TableCell>

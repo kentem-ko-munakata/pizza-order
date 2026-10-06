@@ -1,22 +1,24 @@
 import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from '@mui/material';
 
-interface CancelOrderModalProps {
+interface ConfirmDialogProps {
   open: boolean;
+  title: string;
+  message: string;
   onClose: () => void;
-  onCancel: () => void;
+  onConfirm: () => void;
 }
 
-export const CancelOrderModal = ({ open, onClose, onCancel }: CancelOrderModalProps) => {
+export const ConfirmDialog = ({ open, title, message, onClose, onConfirm }: ConfirmDialogProps) => {
   return (
     <Dialog open={open} onClose={onClose} maxWidth='sm' fullWidth>
-      <DialogTitle>注文取消</DialogTitle>
+      <DialogTitle>{title}</DialogTitle>
       <DialogContent>
-        <DialogContentText>注文取消を行います</DialogContentText>
+        <DialogContentText>{message}</DialogContentText>
       </DialogContent>
 
       <DialogActions>
         <Button onClick={onClose}>閉じる</Button>
-        <Button variant='contained' onClick={onCancel}>
+        <Button variant='contained' onClick={onConfirm}>
           実行
         </Button>
       </DialogActions>

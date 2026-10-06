@@ -1,1 +1,1 @@
-export {} from './ui/OrderControl';
+export { OrderControl } from './ui/OrderControl';

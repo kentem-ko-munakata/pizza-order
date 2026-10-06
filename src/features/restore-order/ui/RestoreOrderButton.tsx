@@ -1,7 +1,7 @@
 import { useOrderStore } from '@/entities/order';
+import { ConfirmDialog } from '@/shared/ui/ConfirmDialog';
 import { Button } from '@mui/material';
 import { useState } from 'react';
-import { RestoreOrderModal } from './RestoreOrderModal';
 
 interface RestoreOrderButtonProps {
   // 未選択（null）のときはボタンを無効にする
@@ -16,21 +16,15 @@ export const RestoreOrderButton = ({ id, disabled = false }: RestoreOrderButtonP
   const [open, setOpen] = useState(false);
   return (
     <>
-      <Button
-        variant='contained'
-        disabled={id === null || disabled}
-        onClick={() => {
-          setOpen(true);
-        }}
-      >
+      <Button variant='contained' disabled={id === null || disabled} onClick={() => setOpen(true)}>
         復元
       </Button>
-      <RestoreOrderModal
+      <ConfirmDialog
         open={open}
-        onClose={() => {
-          setOpen(false);
-        }}
-        onCancel={() => {
+        title='注文復元'
+        message='注文復元を行います'
+        onClose={() => setOpen(false)}
+        onConfirm={() => {
           if (id !== null) restoreOrder(id);
           setOpen(false);
         }}

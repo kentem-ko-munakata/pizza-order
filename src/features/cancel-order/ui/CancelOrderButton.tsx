@@ -1,7 +1,7 @@
 import { useOrderStore } from '@/entities/order';
+import { ConfirmDialog } from '@/shared/ui/ConfirmDialog';
 import { Button } from '@mui/material';
 import { useState } from 'react';
-import { CancelOrderModal } from './CancelOrderModal';
 
 interface CancelOrderButtonProps {
   // 未選択（null）のときはボタンを無効にする
@@ -16,21 +16,15 @@ export const CancelOrderButton = ({ id, disabled = false }: CancelOrderButtonPro
   const [open, setOpen] = useState(false);
   return (
     <>
-      <Button
-        variant='contained'
-        disabled={id === null || disabled}
-        onClick={() => {
-          setOpen(true);
-        }}
-      >
+      <Button variant='contained' disabled={id === null || disabled} onClick={() => setOpen(true)}>
         取消
       </Button>
-      <CancelOrderModal
+      <ConfirmDialog
         open={open}
-        onClose={() => {
-          setOpen(false);
-        }}
-        onCancel={() => {
+        title='注文取消'
+        message='注文取消を行います'
+        onClose={() => setOpen(false)}
+        onConfirm={() => {
           if (id !== null) cancelOrder(id);
           setOpen(false);
         }}
