@@ -15,10 +15,9 @@ export const useAddOrderForm = ({ onClose, onSubmitOrder, onSubmitTopping }: Use
   const [error, setError] = useState('');
   const selectedPizza = pizzaData.find((pizza) => pizza.id === pizzaId);
 
-  // 選択したトッピングの合計を求める
-  // デフォルトトッピングは0円として計算するように修正
+  // ピザに含まれるデフォルトトッピングは追加料金に含めない
   const toppingTotal = toppingData
-    .filter((topping) => toppingIds.includes(topping.id))
+    .filter((topping) => toppingIds.includes(topping.id) && !selectedPizza?.toppings.includes(topping.id))
     .reduce((total, topping) => total + topping.price, 0);
 
   // フォーム初期化
@@ -64,8 +63,10 @@ export const useAddOrderForm = ({ onClose, onSubmitOrder, onSubmitTopping }: Use
     // toppingIdsのトッピングデータを取得
     const selectedToppings = toppingData.filter((topping) => toppingIds.includes(topping.id));
 
-    // ピザ料金 + トッピング合計
-    const pizzaPrice = pizza.price + selectedToppings.reduce((total, topping) => total + topping.price, 0);
+    // ピザ料金 + 追加トッピング料金（デフォルトトッピングは0円）
+    const pizzaPrice =
+      pizza.price +
+      selectedToppings.reduce((total, topping) => total + (pizza.toppings.includes(topping.id) ? 0 : topping.price), 0);
 
     // 注文登録（orderIdは、トッピング登録時に使用）
     const orderId = onSubmitOrder({
@@ -82,7 +83,8 @@ export const useAddOrderForm = ({ onClose, onSubmitOrder, onSubmitTopping }: Use
         toppingId: topping.id,
         // スナップショット
         toppingName: topping.name,
-        toppingPrice: topping.price,
+        // デフォルトトッピングは0として登録
+        toppingPrice: pizza.toppings.includes(topping.id) ? 0 : topping.price,
       });
     });
 

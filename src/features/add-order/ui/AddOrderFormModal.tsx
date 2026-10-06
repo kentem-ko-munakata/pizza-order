@@ -98,8 +98,7 @@ export const AddOrderFormModal = ({ open, onClose, onSubmitOrder, onSubmitToppin
                           />
                         </TableCell>
                         <TableCell>{topping.name}</TableCell>
-                        {/* デフォルトトッピングは0円表示に修正 */}
-                        <TableCell>¥{topping.price.toLocaleString()}</TableCell>
+                        <TableCell>¥{(isDefaultTopping ? 0 : topping.price).toLocaleString()}</TableCell>
                       </TableRow>
                     );
                   })}
