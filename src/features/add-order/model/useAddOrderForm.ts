@@ -73,8 +73,8 @@ export const useAddOrderForm = ({ onClose, onSubmitOrder, onSubmitTopping }: Use
       pizzaId: pizza.id,
       // スナップショット
       pizzaName: pizza.name,
-      pizzaPrice: String(pizza.price),
-      totalPrice: String(totalPrice),
+      pizzaPrice: pizza.price,
+      totalPrice: totalPrice,
     });
 
     // 注文登録（トッピング）

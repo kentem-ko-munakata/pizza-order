@@ -3,7 +3,7 @@ import { useOrderToppingStore } from '@/entities/order/index';
 import { AddOrderFormModal } from '@/features/add-order';
 import { OrderControl } from '@/widgets/order-control/ui/OrderControl';
 import { OrderList } from '@/widgets/order-list';
-import { Container, Stack } from '@mui/material';
+import { Container, Stack, Typography } from '@mui/material';
 import { useState } from 'react';
 
 export const MainPage = () => {
@@ -24,6 +24,11 @@ export const MainPage = () => {
         {/* 注文一覧 */}
         <OrderList orders={orders} orderToppings={orderToppings} />
         {/* 合計表示 */}
+        <Stack sx={{ alignItems: 'end' }}>
+          <Typography sx={{ fontWeight: 'bold' }}>
+            合計：¥{orders.reduce((total, order) => total + order.totalPrice, 0).toLocaleString()}
+          </Typography>
+        </Stack>
       </Stack>
       {/* 注文追加モーダル */}
       <AddOrderFormModal
