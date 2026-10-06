@@ -5,6 +5,7 @@ export const orderSchema = z.object({
   pizzaId: z.string(),
   pizzaName: z.string(),
   pizzaPrice: z.string(),
+  totalPrice: z.string(),
   isCancel: z.boolean(),
   createdAt: z.string(),
   updatedAt: z.string(),

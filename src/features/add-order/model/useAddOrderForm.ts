@@ -32,9 +32,9 @@ export const useAddOrderForm = ({ onClose, onSubmitOrder, onSubmitTopping }: Use
     onClose();
   };
 
-  const handlePizzaChange = (nextPizzaId: string) => {
-    const pizza = pizzaData.find((item) => item.id === nextPizzaId);
-    setPizzaId(nextPizzaId);
+  const handlePizzaChange = (pizzaId: string) => {
+    const pizza = pizzaData.find((pizza) => pizza.id === pizzaId);
+    setPizzaId(pizzaId);
     // ピザのデフォルトトッピングを配列にセット
     setToppingIds(pizza?.toppings ?? []);
     setError('');
@@ -64,7 +64,7 @@ export const useAddOrderForm = ({ onClose, onSubmitOrder, onSubmitTopping }: Use
     const selectedToppings = toppingData.filter((topping) => toppingIds.includes(topping.id));
 
     // ピザ料金 + 追加トッピング料金（デフォルトトッピングは0円）
-    const pizzaPrice =
+    const totalPrice =
       pizza.price +
       selectedToppings.reduce((total, topping) => total + (pizza.toppings.includes(topping.id) ? 0 : topping.price), 0);
 
@@ -73,7 +73,8 @@ export const useAddOrderForm = ({ onClose, onSubmitOrder, onSubmitTopping }: Use
       pizzaId: pizza.id,
       // スナップショット
       pizzaName: pizza.name,
-      pizzaPrice: String(pizzaPrice),
+      pizzaPrice: String(pizza.price),
+      totalPrice: String(totalPrice),
     });
 
     // 注文登録（トッピング）

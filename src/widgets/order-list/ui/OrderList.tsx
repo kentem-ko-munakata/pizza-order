@@ -51,7 +51,7 @@ export const OrderList = ({ orders, orderToppings }: OrderListProps) => {
                     onClick={() => setSelectedOrderId(order.id)}
                   >
                     <TableCell>{order.pizzaName}</TableCell>
-                    <TableCell>{order.pizzaPrice}</TableCell>
+                    <TableCell>¥{order.totalPrice.toLocaleString()}</TableCell>
                   </TableRow>
                 ))
               )}
@@ -77,17 +77,21 @@ export const OrderList = ({ orders, orderToppings }: OrderListProps) => {
                 <TableRow>
                   <TableCell colSpan={2}>注文を選択してください</TableCell>
                 </TableRow>
-              ) : selectedOrderToppings.length === 0 ? (
-                <TableRow>
-                  <TableCell colSpan={2}>トッピングがありません</TableCell>
-                </TableRow>
               ) : (
-                selectedOrderToppings.map((topping) => (
-                  <TableRow key={topping.id}>
-                    <TableCell>{topping.toppingName}</TableCell>
-                    <TableCell>{topping.toppingPrice}</TableCell>
+                <>
+                  {/* ピザ料金表示 */}
+                  <TableRow>
+                    <TableCell>{selectedOrder.pizzaName}</TableCell>
+                    <TableCell>¥{selectedOrder.pizzaPrice.toLocaleString()}</TableCell>
                   </TableRow>
-                ))
+                  {/* トッピング料金表示 */}
+                  {selectedOrderToppings.map((topping) => (
+                    <TableRow key={topping.id}>
+                      <TableCell>{topping.toppingName}</TableCell>
+                      <TableCell>¥{topping.toppingPrice.toLocaleString()}</TableCell>
+                    </TableRow>
+                  ))}
+                </>
               )}
             </TableBody>
           </Table>
