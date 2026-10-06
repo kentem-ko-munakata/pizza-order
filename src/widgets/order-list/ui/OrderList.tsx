@@ -1,4 +1,4 @@
-import type { Order, OrderTopping } from '@/entities/order';
+import { OrderStatusChip, type Order, type OrderTopping } from '@/entities/order';
 import {
   Paper,
   Stack,
@@ -33,6 +33,7 @@ export const OrderList = ({ orders, orderToppings }: OrderListProps) => {
             <TableHead>
               <TableRow>
                 <TableCell>名称</TableCell>
+                <TableCell>注文状況</TableCell>
                 <TableCell>小計</TableCell>
               </TableRow>
             </TableHead>
@@ -51,6 +52,11 @@ export const OrderList = ({ orders, orderToppings }: OrderListProps) => {
                     onClick={() => setSelectedOrderId(order.id)}
                   >
                     <TableCell>{order.pizzaName}</TableCell>
+                    {/* ステータス状況 */}
+
+                    <TableCell>
+                      <OrderStatusChip status={order.isCancel} />
+                    </TableCell>
                     <TableCell>¥{order.totalPrice.toLocaleString()}</TableCell>
                   </TableRow>
                 ))

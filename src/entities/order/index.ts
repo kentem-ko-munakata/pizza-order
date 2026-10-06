@@ -4,3 +4,4 @@ export { orderToppingSchema, type OrderTopping } from './model/orderTopping';
 export type { OrderToppingInput } from './model/orderTopping';
 export { useOrderStore } from './model/orderStore';
 export { useOrderToppingStore } from './model/orderToppingStore';
+export { OrderStatusChip } from './ui/OrderStatusChip';
