@@ -1,7 +1,7 @@
 import { useOrderStore, useOrderToppingStore } from '@/entities/order/index';
 import { Button } from '@mui/material';
 import { useState } from 'react';
-import { AddOrderFormModal } from './AddOrderFormModal';
+import { OrderFormModal } from './OrderFormModal';
 
 export const AddButton = () => {
   const addOrder = useOrderStore((state) => state.addOrder);
@@ -15,12 +15,18 @@ export const AddButton = () => {
       <Button variant='contained' onClick={() => setOpen(true)}>
         追加
       </Button>
-      <AddOrderFormModal
-        open={open}
-        onClose={() => setOpen(false)}
-        onSubmitOrder={addOrder}
-        onSubmitTopping={addOrderTopping}
-      />
+      {open && (
+        <OrderFormModal
+          title='注文を追加'
+          submitLabel='注文を追加'
+          onClose={() => setOpen(false)}
+          onSubmit={(order, toppings) => {
+            // orderIdは、トッピング登録時に使用
+            const orderId = addOrder(order);
+            toppings.forEach((topping) => addOrderTopping({ ...topping, orderId }));
+          }}
+        />
+      )}
     </>
   );
 };

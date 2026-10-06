@@ -1,7 +1,6 @@
-import type { OrderInput, OrderToppingInput } from '@/entities/order';
 import { pizzaData } from '@/entities/pizza/model/pizzaData';
 import { toppingData } from '@/entities/topping/model/toppingData';
-import { useAddOrderForm } from '../model/useAddOrderForm';
+import { useOrderForm, type OrderFormSubmit, type OrderFormValues } from '../model/useOrderForm';
 import {
   Button,
   Checkbox,
@@ -24,38 +23,30 @@ import {
   Typography,
 } from '@mui/material';
 
-interface AddOrderFormModalProps {
-  open: boolean;
+interface OrderFormModalProps {
+  title: string;
+  submitLabel: string;
+  initialValues?: OrderFormValues;
   onClose: () => void;
-  // 注文本体と、その注文に紐づくトッピングを保存する処理。
-  onSubmitOrder: (input: OrderInput) => string;
-  onSubmitTopping: (input: OrderToppingInput) => void;
+  onSubmit: OrderFormSubmit;
 }
 
-export const AddOrderFormModal = ({ open, onClose, onSubmitOrder, onSubmitTopping }: AddOrderFormModalProps) => {
-  const {
-    error,
-    handleClose,
-    handlePizzaChange,
-    handleSubmitOrder,
-    handleToppingChange,
-    pizzaId,
-    selectedPizza,
-    toppingIds,
-    toppingTotal,
-  } = useAddOrderForm({ onClose, onSubmitOrder, onSubmitTopping });
+// 開いている間だけ描画する前提（開くたびに initialValues から入力が始まる）
+export const OrderFormModal = ({ title, submitLabel, initialValues, onClose, onSubmit }: OrderFormModalProps) => {
+  const { error, handlePizzaChange, handleSubmit, handleToppingChange, pizzaId, selectedPizza, toppingIds, toppingTotal } =
+    useOrderForm({ initialValues, onClose, onSubmit });
 
   return (
-    <Dialog open={open} onClose={handleClose} fullWidth maxWidth='sm'>
-      <form onSubmit={handleSubmitOrder}>
-        <DialogTitle>注文を追加</DialogTitle>
+    <Dialog open onClose={onClose} fullWidth maxWidth='sm'>
+      <form onSubmit={handleSubmit}>
+        <DialogTitle>{title}</DialogTitle>
         <DialogContent>
           <Stack spacing={2}>
             <FormControl fullWidth error={Boolean(error)}>
-              <InputLabel id='add-order-pizza-label'>ピザ</InputLabel>
+              <InputLabel id='order-form-pizza-label'>ピザ</InputLabel>
               <Select
                 value={pizzaId}
-                labelId='add-order-pizza-label'
+                labelId='order-form-pizza-label'
                 label='ピザ'
                 onChange={(event) => handlePizzaChange(event.target.value)}
               >
@@ -110,10 +101,9 @@ export const AddOrderFormModal = ({ open, onClose, onSubmitOrder, onSubmitToppin
           </Stack>
         </DialogContent>
         <DialogActions>
-          {/* キャンセル時も送信後と同じく、入力を初期化してダイアログを閉じる。 */}
-          <Button onClick={handleClose}>キャンセル</Button>
+          <Button onClick={onClose}>キャンセル</Button>
           <Button type='submit' variant='contained'>
-            注文を追加
+            {submitLabel}
           </Button>
         </DialogActions>
       </form>

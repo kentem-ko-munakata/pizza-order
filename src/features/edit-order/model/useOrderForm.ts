@@ -3,15 +3,26 @@ import { pizzaData } from '@/entities/pizza/model/pizzaData';
 import { toppingData } from '@/entities/topping/model/toppingData';
 import { useState, type FormEvent } from 'react';
 
-interface UseAddOrderFormProps {
-  onClose: () => void;
-  onSubmitOrder: (input: OrderInput) => string;
-  onSubmitTopping: (input: OrderToppingInput) => void;
+// 注文に紐づくトッピング（orderId は保存側で付与する）
+export type OrderFormTopping = Omit<OrderToppingInput, 'orderId'>;
+
+export interface OrderFormValues {
+  pizzaId: string;
+  toppingIds: string[];
 }
 
-export const useAddOrderForm = ({ onClose, onSubmitOrder, onSubmitTopping }: UseAddOrderFormProps) => {
-  const [pizzaId, setPizzaId] = useState('');
-  const [toppingIds, setToppingIds] = useState<string[]>([]);
+export type OrderFormSubmit = (order: OrderInput, toppings: OrderFormTopping[]) => void;
+
+interface UseOrderFormProps {
+  // 変更時は既存の注文の値、追加時は未指定（空のフォーム）
+  initialValues?: OrderFormValues;
+  onClose: () => void;
+  onSubmit: OrderFormSubmit;
+}
+
+export const useOrderForm = ({ initialValues, onClose, onSubmit }: UseOrderFormProps) => {
+  const [pizzaId, setPizzaId] = useState(initialValues?.pizzaId ?? '');
+  const [toppingIds, setToppingIds] = useState<string[]>(initialValues?.toppingIds ?? []);
   const [error, setError] = useState('');
   const selectedPizza = pizzaData.find((pizza) => pizza.id === pizzaId);
 
@@ -19,18 +30,6 @@ export const useAddOrderForm = ({ onClose, onSubmitOrder, onSubmitTopping }: Use
   const toppingTotal = toppingData
     .filter((topping) => toppingIds.includes(topping.id) && !selectedPizza?.toppings.includes(topping.id))
     .reduce((total, topping) => total + topping.price, 0);
-
-  // フォーム初期化
-  const reset = () => {
-    setPizzaId('');
-    setToppingIds([]);
-    setError('');
-  };
-
-  const handleClose = () => {
-    reset();
-    onClose();
-  };
 
   const handlePizzaChange = (pizzaId: string) => {
     const pizza = pizzaData.find((pizza) => pizza.id === pizzaId);
@@ -51,7 +50,7 @@ export const useAddOrderForm = ({ onClose, onSubmitOrder, onSubmitTopping }: Use
     setToppingIds((currentIds) => (checked ? [...currentIds, toppingId] : currentIds.filter((id) => id !== toppingId)));
   };
 
-  const handleSubmitOrder = (event: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
     const pizza = pizzaData.find((item) => item.id === pizzaId);
@@ -63,40 +62,32 @@ export const useAddOrderForm = ({ onClose, onSubmitOrder, onSubmitTopping }: Use
     // toppingIdsのトッピングデータを取得
     const selectedToppings = toppingData.filter((topping) => toppingIds.includes(topping.id));
 
-    // ピザ料金 + 追加トッピング料金（デフォルトトッピングは0円）
-    const totalPrice =
-      pizza.price +
-      selectedToppings.reduce((total, topping) => total + (pizza.toppings.includes(topping.id) ? 0 : topping.price), 0);
-
-    // 注文登録（orderIdは、トッピング登録時に使用）
-    const orderId = onSubmitOrder({
-      pizzaId: pizza.id,
+    // トッピング（デフォルトトッピングは0円）
+    const toppings = selectedToppings.map((topping) => ({
+      toppingId: topping.id,
       // スナップショット
-      pizzaName: pizza.name,
-      pizzaPrice: pizza.price,
-      totalPrice: totalPrice,
-    });
+      toppingName: topping.name,
+      toppingPrice: pizza.toppings.includes(topping.id) ? 0 : topping.price,
+    }));
 
-    // 注文登録（トッピング）
-    selectedToppings.forEach((topping) => {
-      onSubmitTopping({
-        orderId,
-        toppingId: topping.id,
+    onSubmit(
+      {
+        pizzaId: pizza.id,
         // スナップショット
-        toppingName: topping.name,
-        // デフォルトトッピングは0として登録
-        toppingPrice: pizza.toppings.includes(topping.id) ? 0 : topping.price,
-      });
-    });
-
-    handleClose();
+        pizzaName: pizza.name,
+        pizzaPrice: pizza.price,
+        // ピザ料金 + 追加トッピング料金
+        totalPrice: pizza.price + toppings.reduce((total, topping) => total + topping.toppingPrice, 0),
+      },
+      toppings,
+    );
+    onClose();
   };
 
   return {
     error,
-    handleClose,
     handlePizzaChange,
-    handleSubmitOrder,
+    handleSubmit,
     handleToppingChange,
     pizzaId,
     selectedPizza,

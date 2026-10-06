@@ -1,6 +1,6 @@
 import type { Order } from '@/entities/order';
-import { Button, Stack } from '@mui/material';
-import { AddButton } from '@/features/add-order';
+import { Stack } from '@mui/material';
+import { AddButton, UpdateButton } from '@/features/edit-order';
 import { CancelOrderButton } from '@/features/cancel-order';
 import { RestoreOrderButton } from '@/features/restore-order';
 
@@ -14,9 +14,7 @@ export const OrderControl = ({ selectedOrder }: OrderControlProps) => {
   return (
     <Stack direction='row' spacing={2}>
       <AddButton />
-      <Button variant='contained' disabled={selectedOrder === null}>
-        変更
-      </Button>
+      <UpdateButton order={selectedOrder} />
       {/* 取消済みの注文は取消できない */}
       <CancelOrderButton id={selectedOrderId} disabled={selectedOrder?.isCancel ?? false} />
       {/* 取消されていない注文は復元できない */}
