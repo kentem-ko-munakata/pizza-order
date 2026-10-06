@@ -1,13 +1,10 @@
 import { Button, Stack } from '@mui/material';
+import { AddButton } from '@/features/add-order';
 
-interface OrderControlProps {
-  onAddOrder: () => void;
-}
-
-export const OrderControl = ({ onAddOrder }: OrderControlProps) => {
+export const OrderControl = () => {
   return (
     <Stack direction='row' spacing={2}>
-      <Button onClick={onAddOrder}>追加</Button>
+      <AddButton />
       <Button>変更</Button>
       <Button>取消</Button>
       <Button>復元</Button>
