@@ -1,17 +1,17 @@
 import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from '@mui/material';
 
-interface CancelOrderModalProps {
+interface RestoreOrderModalProps {
   open: boolean;
   onClose: () => void;
   onCancel: () => void;
 }
 
-export const CancelOrderModal = ({ open, onClose, onCancel }: CancelOrderModalProps) => {
+export const RestoreOrderModal = ({ open, onClose, onCancel }: RestoreOrderModalProps) => {
   return (
     <Dialog open={open} onClose={onClose} maxWidth='sm' fullWidth>
-      <DialogTitle>注文取消</DialogTitle>
+      <DialogTitle>注文復元</DialogTitle>
       <DialogContent>
-        <DialogContentText>注文取消を行います</DialogContentText>
+        <DialogContentText>注文復元を行います</DialogContentText>
       </DialogContent>
 
       <DialogActions>
