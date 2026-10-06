@@ -13,8 +13,8 @@ type OrderActions = {
   addOrder: (input: OrderInput) => string;
   // 追加予定
   // updateOrder: (id: string, input:OrderInput) => void;
-  // cancelOrder: (id: string) => void;
-  // restoreOrder: (id: string) => void;
+  cancelOrder: (id: string) => void;
+  restoreOrder: (id: string) => void;
 };
 
 export const useOrderStore = create<OrderState & OrderActions>()(
@@ -30,8 +30,35 @@ export const useOrderStore = create<OrderState & OrderActions>()(
       },
       // 追加予定
       // updateOrder
-      // cancelOrder
+      cancelOrder: (id) => {
+        const now = new Date().toISOString();
+        set((state) => ({
+          orders: state.orders.map((order) =>
+            order.id === id
+              ? {
+                  ...order,
+                  isCancel: true,
+                  updatedAt: now,
+                }
+              : order,
+          ),
+        }));
+      },
       // restoreOrder
+      restoreOrder: (id) => {
+        const now = new Date().toISOString();
+        set((state) => ({
+          orders: state.orders.map((order) =>
+            order.id === id
+              ? {
+                  ...order,
+                  isCancel: false,
+                  updatedAt: now,
+                }
+              : order,
+          ),
+        }));
+      },
     }),
     {
       name: storageKey('orders'),
