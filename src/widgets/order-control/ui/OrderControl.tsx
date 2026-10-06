@@ -1,13 +1,18 @@
 import { Button, Stack } from '@mui/material';
 import { AddButton } from '@/features/add-order';
+import { CancelOrderButton } from '@/features/cancel-order';
 
-export const OrderControl = () => {
+interface OrderControlProps {
+  selectedOrderId: string | null;
+}
+
+export const OrderControl = ({ selectedOrderId }: OrderControlProps) => {
   return (
     <Stack direction='row' spacing={2}>
       <AddButton />
-      <Button>変更</Button>
-      <Button>取消</Button>
-      <Button>復元</Button>
+      <Button disabled={selectedOrderId === null}>変更</Button>
+      <CancelOrderButton id={selectedOrderId} />
+      <Button disabled={selectedOrderId === null}>復元</Button>
     </Stack>
   );
 };

@@ -10,16 +10,17 @@ import {
   TableRow,
   Typography,
 } from '@mui/material';
-import { useState } from 'react';
 
 interface OrderListProps {
   orders: Order[];
   orderToppings: OrderTopping[];
+  // 選択状態は親（MainPage）が持つ
+  selectedOrderId: string | null;
+  onSelectOrder: (id: string) => void;
 }
 
-export const OrderList = ({ orders, orderToppings }: OrderListProps) => {
-  const [selectedOrderId, setSelectedOrderId] = useState<string | null>(null);
-  const selectedOrder = orders.find((order) => order.id === selectedOrderId) ?? orders[0];
+export const OrderList = ({ orders, orderToppings, selectedOrderId, onSelectOrder }: OrderListProps) => {
+  const selectedOrder = orders.find((order) => order.id === selectedOrderId);
   const selectedOrderToppings = orderToppings.filter((topping) => topping.orderId === selectedOrder?.id);
 
   return (
@@ -49,7 +50,7 @@ export const OrderList = ({ orders, orderToppings }: OrderListProps) => {
                     hover
                     selected={order.id === selectedOrder?.id}
                     sx={{ cursor: 'pointer' }}
-                    onClick={() => setSelectedOrderId(order.id)}
+                    onClick={() => onSelectOrder(order.id)}
                   >
                     <TableCell>{order.pizzaName}</TableCell>
                     {/* ステータス状況 */}
