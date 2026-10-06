@@ -11,19 +11,12 @@ type OrderState = {
 
 type OrderActions = {
   addOrder: (input: OrderInput) => string;
-  // 追加予定
-  // updateOrder: (id: string, input:OrderInput) => void;
+  updateOrder: (id: string, input: OrderInput) => void;
   cancelOrder: (id: string) => void;
   restoreOrder: (id: string) => void;
 };
 
-// 指定IDの注文の取消状態を更新する（取消・復元で共通）
-const setIsCancel = (orders: Order[], id: string, isCancel: boolean): Order[] => {
-  const now = new Date().toISOString();
-  return orders.map((order) => (order.id === id ? { ...order, isCancel, updatedAt: now } : order));
-};
-
-export const useOrderStore =create<OrderState & OrderActions>()(
+export const useOrderStore = create<OrderState & OrderActions>()(
   persist(
     (set) => ({
       orders: [],
@@ -34,10 +27,41 @@ export const useOrderStore =create<OrderState & OrderActions>()(
         set((state) => ({ orders: [order, ...state.orders] }));
         return id;
       },
-      // 追加予定
-      // updateOrder
-      cancelOrder: (id) => set((state) => ({ orders: setIsCancel(state.orders, id, true) })),
-      restoreOrder: (id) => set((state) => ({ orders: setIsCancel(state.orders, id, false) })),
+      updateOrder: (id, input) => {
+        const now = new Date().toISOString();
+        set((state) => ({
+          orders: state.orders.map((order) => (order.id === id ? { ...order, ...input, updatedAt: now } : order)),
+        }));
+      },
+
+      cancelOrder: (id) => {
+        const now = new Date().toISOString();
+        set((state) => ({
+          orders: state.orders.map((order) =>
+            order.id === id
+              ? {
+                  ...order,
+                  isCancel: true,
+                  updatedAt: now,
+                }
+              : order,
+          ),
+        }));
+      },
+      restoreOrder: (id) => {
+        const now = new Date().toISOString();
+        set((state) => ({
+          orders: state.orders.map((order) =>
+            order.id === id
+              ? {
+                  ...order,
+                  isCancel: false,
+                  updatedAt: now,
+                }
+              : order,
+          ),
+        }));
+      },
     }),
     {
       name: storageKey('orders'),
