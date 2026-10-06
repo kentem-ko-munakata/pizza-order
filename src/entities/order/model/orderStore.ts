@@ -17,7 +17,13 @@ type OrderActions = {
   restoreOrder: (id: string) => void;
 };
 
-export const useOrderStore = create<OrderState & OrderActions>()(
+// 指定IDの注文の取消状態を更新する（取消・復元で共通）
+const setIsCancel = (orders: Order[], id: string, isCancel: boolean): Order[] => {
+  const now = new Date().toISOString();
+  return orders.map((order) => (order.id === id ? { ...order, isCancel, updatedAt: now } : order));
+};
+
+export const useOrderStore =create<OrderState & OrderActions>()(
   persist(
     (set) => ({
       orders: [],
@@ -30,35 +36,8 @@ export const useOrderStore = create<OrderState & OrderActions>()(
       },
       // 追加予定
       // updateOrder
-      cancelOrder: (id) => {
-        const now = new Date().toISOString();
-        set((state) => ({
-          orders: state.orders.map((order) =>
-            order.id === id
-              ? {
-                  ...order,
-                  isCancel: true,
-                  updatedAt: now,
-                }
-              : order,
-          ),
-        }));
-      },
-      // restoreOrder
-      restoreOrder: (id) => {
-        const now = new Date().toISOString();
-        set((state) => ({
-          orders: state.orders.map((order) =>
-            order.id === id
-              ? {
-                  ...order,
-                  isCancel: false,
-                  updatedAt: now,
-                }
-              : order,
-          ),
-        }));
-      },
+      cancelOrder: (id) => set((state) => ({ orders: setIsCancel(state.orders, id, true) })),
+      restoreOrder: (id) => set((state) => ({ orders: setIsCancel(state.orders, id, false) })),
     }),
     {
       name: storageKey('orders'),
