@@ -6,16 +6,19 @@ import { CancelOrderModal } from './CancelOrderModal';
 interface CancelOrderButtonProps {
   // 未選択（null）のときはボタンを無効にする
   id: string | null;
+  // 取消済みなど、呼び出し側の条件で無効にする場合に指定
+  disabled?: boolean;
 }
 
-export const CancelOrderButton = ({ id }: CancelOrderButtonProps) => {
+export const CancelOrderButton = ({ id, disabled = false }: CancelOrderButtonProps) => {
   const cancelOrder = useOrderStore((state) => state.cancelOrder);
 
   const [open, setOpen] = useState(false);
   return (
     <>
       <Button
-        disabled={id === null}
+        variant='contained'
+        disabled={id === null || disabled}
         onClick={() => {
           setOpen(true);
         }}

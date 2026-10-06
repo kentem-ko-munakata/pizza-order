@@ -20,7 +20,7 @@ export const MainPage = () => {
           ピザ注文システム
         </Typography>
         {/* 操作ボタン系 */}
-        <OrderControl selectedOrderId={selectedOrder?.id ?? null} />
+        <OrderControl selectedOrder={selectedOrder ?? null} />
         {/* 注文一覧 */}
         <OrderList
           orders={orders}
@@ -31,7 +31,8 @@ export const MainPage = () => {
         {/* 合計表示 */}
         <Stack sx={{ alignItems: 'end' }}>
           <Typography sx={{ fontWeight: 'bold' }}>
-            合計：¥{orders.reduce((total, order) => total + order.totalPrice, 0).toLocaleString()}
+            合計：¥
+            {orders.reduce((total, order) => (order.isCancel ? total : total + order.totalPrice), 0).toLocaleString()}
           </Typography>
         </Stack>
       </Stack>

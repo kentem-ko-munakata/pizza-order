@@ -12,7 +12,9 @@ export const AddButton = () => {
 
   return (
     <>
-      <Button onClick={() => setOpen(true)}>追加</Button>
+      <Button variant='contained' onClick={() => setOpen(true)}>
+        追加
+      </Button>
       <AddOrderFormModal
         open={open}
         onClose={() => setOpen(false)}

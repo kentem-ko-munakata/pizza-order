@@ -6,16 +6,19 @@ import { RestoreOrderModal } from './RestoreOrderModal';
 interface RestoreOrderButtonProps {
   // 未選択（null）のときはボタンを無効にする
   id: string | null;
+  // 取消されていないなど、呼び出し側の条件で無効にする場合に指定
+  disabled?: boolean;
 }
 
-export const RestoreOrderButton = ({ id }: RestoreOrderButtonProps) => {
+export const RestoreOrderButton = ({ id, disabled = false }: RestoreOrderButtonProps) => {
   const restoreOrder = useOrderStore((state) => state.restoreOrder);
 
   const [open, setOpen] = useState(false);
   return (
     <>
       <Button
-        disabled={id === null}
+        variant='contained'
+        disabled={id === null || disabled}
         onClick={() => {
           setOpen(true);
         }}
