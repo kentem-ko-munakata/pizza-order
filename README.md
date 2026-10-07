@@ -28,24 +28,51 @@
 
 ## データ
 
+注文は localStorage に保存する。
+
+### マスターデータ（固定データ）
+
 - Pizza
   - id
   - name
   - price
-  - defaultToppings:Topping[]
+  - toppings:string[]（デフォルトトッピングのTopping id）
 - Topping
   - id
   - name
   - price
+
+### 注文データ（保存対象）
+
+注文時点のピザ名・金額などを保持する（後からマスターが変わっても注文内容は変わらない）。トッピングは注文とは別に、`orderId` で紐づけて保持する。
+
 - Order
   - id
-  - Pizza
-  - toppings:Topping[]
+  - pizzaId
+  - pizzaName
+  - pizzaPrice
+  - totalPrice（ピザ料金 + 追加トッピング料金）
   - isCancel
+  - createdAt
+  - updatedAt
+- OrderTopping
+  - id
+  - orderId
+  - toppingId
+  - toppingName
+  - toppingPrice（デフォルトトッピングは0円）
+  - createdAt
+  - updatedAt
 
 ## 操作
 
-- 注文追加(add-order)
-- 注文変更(update-order)
+- 注文追加(edit-order)
+  - ピザとトッピングを選んで注文を登録する
+- 注文変更(edit-order)
+  - 選択中の注文のピザ・トッピングを変更する
 - 注文取消(cancel-order)
+  - 取消済みの注文は取消できない
 - 注文復元(restore-order)
+  - 取消されていない注文は復元できない
+
+注文を選択していない間は、変更・取消・復元は押せない。
