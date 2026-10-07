@@ -9,16 +9,12 @@ interface OrderControlProps {
 }
 
 export const OrderControl = ({ selectedOrder }: OrderControlProps) => {
-  const selectedOrderId = selectedOrder?.id ?? null;
-
   return (
     <Stack direction='row' spacing={2}>
       <AddButton />
       <UpdateButton order={selectedOrder} />
-      {/* 取消済みの注文は取消できない */}
-      <CancelOrderButton id={selectedOrderId} disabled={selectedOrder?.isCancel ?? false} />
-      {/* 取消されていない注文は復元できない */}
-      <RestoreOrderButton id={selectedOrderId} disabled={!selectedOrder?.isCancel} />
+      <CancelOrderButton order={selectedOrder} />
+      <RestoreOrderButton order={selectedOrder} />
     </Stack>
   );
 };
