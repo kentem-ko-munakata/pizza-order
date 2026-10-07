@@ -5,7 +5,7 @@ import { OrderFormModal } from './OrderFormModal';
 
 export const AddButton = () => {
   const addOrder = useOrderStore((state) => state.addOrder);
-  const addOrderTopping = useOrderToppingStore((state) => state.addOrderTopping);
+  const setOrderToppings = useOrderToppingStore((state) => state.setOrderToppings);
 
   // 注文追加モーダル開閉用
   const [open, setOpen] = useState(false);
@@ -20,10 +20,10 @@ export const AddButton = () => {
           title='注文を追加'
           submitLabel='注文を追加'
           onClose={() => setOpen(false)}
-          onSubmit={(order, toppings) => {
+          onSave={(order, toppings) => {
             // orderIdは、トッピング登録時に使用
             const orderId = addOrder(order);
-            toppings.forEach((topping) => addOrderTopping({ ...topping, orderId }));
+            setOrderToppings(orderId, toppings);
           }}
         />
       )}

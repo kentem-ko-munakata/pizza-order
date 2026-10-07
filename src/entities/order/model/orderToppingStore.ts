@@ -10,21 +10,15 @@ type OrderToppingState = {
 };
 
 type OrderToppingActions = {
-  addOrderTopping: (input: OrderToppingInput) => void;
-  // 指定した注文のトッピングを、渡した一覧で入れ替える
-  updateOrderToppings: (orderId: string, inputs: Omit<OrderToppingInput, 'orderId'>[]) => void;
+  // 指定した注文のトッピングを、渡した一覧にする（追加・変更どちらでも使う）
+  setOrderToppings: (orderId: string, inputs: Omit<OrderToppingInput, 'orderId'>[]) => void;
 };
 
 export const useOrderToppingStore = create<OrderToppingState & OrderToppingActions>()(
   persist(
     (set) => ({
       orderToppings: [],
-      addOrderTopping: (input) => {
-        const now = new Date().toISOString();
-        const orderTopping: OrderTopping = { ...input, id: crypto.randomUUID(), createdAt: now, updatedAt: now };
-        set((state) => ({ orderToppings: [orderTopping, ...state.orderToppings] }));
-      },
-      updateOrderToppings: (orderId, inputs) => {
+      setOrderToppings: (orderId, inputs) => {
         const now = new Date().toISOString();
         const newToppings: OrderTopping[] = inputs.map((input) => ({
           ...input,

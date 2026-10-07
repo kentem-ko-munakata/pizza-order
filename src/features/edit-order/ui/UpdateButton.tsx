@@ -11,7 +11,7 @@ interface UpdateButtonProps {
 export const UpdateButton = ({ order }: UpdateButtonProps) => {
   const updateOrder = useOrderStore((state) => state.updateOrder);
   const orderToppings = useOrderToppingStore((state) => state.orderToppings);
-  const updateOrderToppings = useOrderToppingStore((state) => state.updateOrderToppings);
+  const setOrderToppings = useOrderToppingStore((state) => state.setOrderToppings);
 
   // 注文変更モーダル開閉用
   const [open, setOpen] = useState(false);
@@ -31,9 +31,9 @@ export const UpdateButton = ({ order }: UpdateButtonProps) => {
             toppingIds: orderToppings.filter((topping) => topping.orderId === order.id).map((topping) => topping.toppingId),
           }}
           onClose={() => setOpen(false)}
-          onSubmit={(input, toppings) => {
+          onSave={(input, toppings) => {
             updateOrder(order.id, input);
-            updateOrderToppings(order.id, toppings);
+            setOrderToppings(order.id, toppings);
           }}
         />
       )}
