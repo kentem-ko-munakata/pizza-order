@@ -1,6 +1,6 @@
 import { pizzaData } from '@/entities/pizza/model/pizzaData';
 import { toppingData } from '@/entities/topping/model/toppingData';
-import { useOrderForm, type OrderFormSubmit, type OrderFormValues } from '../model/useOrderForm';
+import { useOrderForm, type OrderFormSave,type OrderFormValues } from '../model/useOrderForm';
 import {
   Button,
   Checkbox,
@@ -28,13 +28,22 @@ interface OrderFormModalProps {
   submitLabel: string;
   initialValues?: OrderFormValues;
   onClose: () => void;
-  onSubmit: OrderFormSubmit;
+  onSave: OrderFormSave;
 }
 
 // 開いている間だけ描画する前提（開くたびに initialValues から入力が始まる）
-export const OrderFormModal = ({ title, submitLabel, initialValues, onClose, onSubmit }: OrderFormModalProps) => {
-  const { error, handlePizzaChange, handleSubmit, handleToppingChange, pizzaId, selectedPizza, toppingIds, toppingTotal } =
-    useOrderForm({ initialValues, onClose, onSubmit });
+export const OrderFormModal = ({ title, submitLabel, initialValues, onClose, onSave }: OrderFormModalProps) => {
+  const {
+    error,
+    handlePizzaChange,
+    handleSubmit,
+    handleToppingChange,
+    isDefaultTopping,
+    pizzaId,
+    selectedPizza,
+    toppingIds,
+    totalPrice,
+  } = useOrderForm({ initialValues, onClose, onSave });
 
   return (
     <Dialog open onClose={onClose} fullWidth maxWidth='sm'>
@@ -75,7 +84,7 @@ export const OrderFormModal = ({ title, submitLabel, initialValues, onClose, onS
                 <TableBody>
                   {toppingData.map((topping) => {
                     // デフォルトトッピング判定
-                    const isDefaultTopping = selectedPizza?.toppings.includes(topping.id) ?? false;
+                    const isDefault = isDefaultTopping(topping.id);
 
                     return (
                       <TableRow key={topping.id}>
@@ -84,20 +93,19 @@ export const OrderFormModal = ({ title, submitLabel, initialValues, onClose, onS
                             size='small'
                             checked={toppingIds.includes(topping.id)}
                             // ピザが未選択 or デフォルトトッピングのものは無効化
-                            disabled={!selectedPizza || isDefaultTopping}
+                            disabled={!selectedPizza || isDefault}
                             onChange={(event) => handleToppingChange(topping.id, event.target.checked)}
                           />
                         </TableCell>
                         <TableCell>{topping.name}</TableCell>
-                        <TableCell>¥{(isDefaultTopping ? 0 : topping.price).toLocaleString()}</TableCell>
+                        <TableCell>¥{(isDefault ? 0 : topping.price).toLocaleString()}</TableCell>
                       </TableRow>
                     );
                   })}
                 </TableBody>
               </Table>
             </FormControl>
-            {/* ピザの価格に、選択したトッピングの合計額を加えて表示する。 */}
-            <Typography variant='h6'>合計: ¥{((selectedPizza?.price ?? 0) + toppingTotal).toLocaleString()}</Typography>
+            <Typography variant='h6'>合計: ¥{totalPrice.toLocaleString()}</Typography>
           </Stack>
         </DialogContent>
         <DialogActions>

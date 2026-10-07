@@ -11,37 +11,48 @@ export interface OrderFormValues {
   toppingIds: string[];
 }
 
-export type OrderFormSubmit = (order: OrderInput, toppings: OrderFormTopping[]) => void;
+export type OrderFormSave =(order: OrderInput, toppings: OrderFormTopping[]) => void;
 
 interface UseOrderFormProps {
   // 変更時は既存の注文の値、追加時は未指定（空のフォーム）
   initialValues?: OrderFormValues;
   onClose: () => void;
-  onSubmit: OrderFormSubmit;
+  onSave: OrderFormSave;
 }
 
-export const useOrderForm = ({ initialValues, onClose, onSubmit }: UseOrderFormProps) => {
+export const useOrderForm = ({ initialValues, onClose, onSave }: UseOrderFormProps) => {
   const [pizzaId, setPizzaId] = useState(initialValues?.pizzaId ?? '');
   const [toppingIds, setToppingIds] = useState<string[]>(initialValues?.toppingIds ?? []);
   const [error, setError] = useState('');
   const selectedPizza = pizzaData.find((pizza) => pizza.id === pizzaId);
 
-  // ピザに含まれるデフォルトトッピングは追加料金に含めない
-  const toppingTotal = toppingData
-    .filter((topping) => toppingIds.includes(topping.id) && !selectedPizza?.toppings.includes(topping.id))
-    .reduce((total, topping) => total + topping.price, 0);
+  // 選択中のピザに含まれるデフォルトトッピングか
+  const isDefaultTopping = (toppingId: string) => selectedPizza?.toppings.includes(toppingId) ?? false;
 
-  const handlePizzaChange = (pizzaId: string) => {
-    const pizza = pizzaData.find((pizza) => pizza.id === pizzaId);
-    setPizzaId(pizzaId);
+  // 選択中のトッピング（デフォルトトッピングは0円）
+  const selectedToppings: OrderFormTopping[] = toppingData
+    .filter((topping) => toppingIds.includes(topping.id))
+    .map((topping) => ({
+      toppingId: topping.id,
+      // スナップショット
+      toppingName: topping.name,
+      toppingPrice: isDefaultTopping(topping.id) ? 0 : topping.price,
+    }));
+
+  // ピザ料金 + 追加トッピング料金
+  const totalPrice = (selectedPizza?.price ?? 0) + selectedToppings.reduce((total, topping) => total + topping.toppingPrice, 0);
+
+  const handlePizzaChange = (nextPizzaId: string) => {
+    const nextPizza = pizzaData.find((pizza) => pizza.id === nextPizzaId);
+    setPizzaId(nextPizzaId);
     // ピザのデフォルトトッピングを配列にセット
-    setToppingIds(pizza?.toppings ?? []);
+    setToppingIds(nextPizza?.toppings ?? []);
     setError('');
   };
 
   const handleToppingChange = (toppingId: string, checked: boolean) => {
-    // ピザ未選択 or 選択済みピザのトッピングと一致する場合
-    if (!selectedPizza || selectedPizza.toppings.includes(toppingId)) {
+    // ピザ未選択 or 選択済みピザのデフォルトトッピングの場合
+    if (!selectedPizza || isDefaultTopping(toppingId)) {
       return;
     }
 
@@ -53,33 +64,20 @@ export const useOrderForm = ({ initialValues, onClose, onSubmit }: UseOrderFormP
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
-    const pizza = pizzaData.find((item) => item.id === pizzaId);
-    if (!pizza) {
+    if (!selectedPizza) {
       setError('ピザを選択してください');
       return;
     }
 
-    // toppingIdsのトッピングデータを取得
-    const selectedToppings = toppingData.filter((topping) => toppingIds.includes(topping.id));
-
-    // トッピング（デフォルトトッピングは0円）
-    const toppings = selectedToppings.map((topping) => ({
-      toppingId: topping.id,
-      // スナップショット
-      toppingName: topping.name,
-      toppingPrice: pizza.toppings.includes(topping.id) ? 0 : topping.price,
-    }));
-
-    onSubmit(
+    onSave(
       {
-        pizzaId: pizza.id,
+        pizzaId: selectedPizza.id,
         // スナップショット
-        pizzaName: pizza.name,
-        pizzaPrice: pizza.price,
-        // ピザ料金 + 追加トッピング料金
-        totalPrice: pizza.price + toppings.reduce((total, topping) => total + topping.toppingPrice, 0),
+        pizzaName: selectedPizza.name,
+        pizzaPrice: selectedPizza.price,
+        totalPrice,
       },
-      toppings,
+      selectedToppings,
     );
     onClose();
   };
@@ -89,9 +87,10 @@ export const useOrderForm = ({ initialValues, onClose, onSubmit }: UseOrderFormP
     handlePizzaChange,
     handleSubmit,
     handleToppingChange,
+    isDefaultTopping,
     pizzaId,
     selectedPizza,
     toppingIds,
-    toppingTotal,
+    totalPrice,
   };
 };
