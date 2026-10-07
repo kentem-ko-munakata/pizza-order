@@ -1,17 +1,20 @@
-import { useOrderStore } from '@/entities/order/index';
-import { useOrderToppingStore } from '@/entities/order/index';
+import { useOrderStore, useOrderToppingStore, calcTotalPrice } from '@/entities/order/index';
 import { OrderControl } from '@/widgets/order-control';
 import { OrderList } from '@/widgets/order-list';
 import { Container, Stack, Typography } from '@mui/material';
 import { useState } from 'react';
 
 export const MainPage = () => {
+  // 注文一覧
   const orders = useOrderStore((state) => state.orders);
+  // 注文に紐づくトッピング一覧
   const orderToppings = useOrderToppingStore((state) => state.orderToppings);
 
   const [selectedOrderId, setSelectedOrderId] = useState<string | null>(null);
   // 未選択（または選択中の注文が消えた）場合は先頭の注文を選択扱いにする
   const selectedOrder = orders.find((order) => order.id === selectedOrderId) ?? orders[0];
+
+  const totalPrice = calcTotalPrice(orders);
 
   return (
     <Container maxWidth='lg'>
@@ -25,14 +28,14 @@ export const MainPage = () => {
         <OrderList
           orders={orders}
           orderToppings={orderToppings}
-          selectedOrderId={selectedOrder?.id ?? null}
+          selectedOrderId={selectedOrder?.id}
           onSelectOrder={setSelectedOrderId}
         />
         {/* 合計表示 */}
         <Stack sx={{ alignItems: 'end' }}>
           <Typography sx={{ fontWeight: 'bold' }}>
             合計：¥
-            {orders.reduce((total, order) => (order.isCancel ? total : total + order.totalPrice), 0).toLocaleString()}
+            {totalPrice.toLocaleString()}
           </Typography>
         </Stack>
       </Stack>
