@@ -28,7 +28,7 @@ export const MainPage = () => {
         <OrderList
           orders={orders}
           orderToppings={orderToppings}
-          selectedOrderId={selectedOrder?.id ?? null}
+          selectedOrder={selectedOrder}
           onSelectOrder={setSelectedOrderId}
         />
         {/* 合計表示 */}
