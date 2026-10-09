@@ -1,32 +1,78 @@
-# React + TypeScript + Vite
+# ピザ注文システム（pizza-order）
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+ピザの注文管理を行う。ピザは種類ごとに値段とトッピングを持つ。また、デフォルトトッピングがあり、注文追加時には自動で付与・変更不可とする。
 
-Currently, two official plugins are available:
+## 画面
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+### メイン画面(MainPage)
 
-## React Compiler
+- 注文一覧表示
+- 各注文の詳細表示
+  - ピザおよびトッピング
+  - ピザの合計金額
+- 各操作ボタン
+  - 注文追加ボタン
+  - 注文変更ボタン（追加仕様）
+  - 取り消しボタン
+  - 復元ボタン
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+![メイン画面](./public/MainPage.png)
 
-## Expanding the Oxlint configuration
+### 注文追加モーダル(AddOrderModal)
 
-If you are developing a production application, we recommend enabling type-aware lint rules by installing `oxlint-tsgolint` and editing `.oxlintrc.json`:
+- ピザ一覧（名称・価格）
+- トッピング一覧（名称・価格）
+  - 各ピザのデフォルトトッピングはチェック済みとし、変更不可・0円表示とする
 
-```json
-{
-  "$schema": "./node_modules/oxlint/configuration_schema.json",
-  "plugins": ["react", "typescript", "oxc"],
-  "options": {
-    "typeAware": true
-  },
-  "rules": {
-    "react/rules-of-hooks": "error",
-    "react/only-export-components": ["warn", { "allowConstantExport": true }]
-  }
-}
-```
+![注文追加モーダル](./public/AddOrderModal.png)
 
-See the [Oxlint rules documentation](https://oxc.rs/docs/guide/usage/linter/rules) for the full list of rules and categories.
+## データ
+
+注文は localStorage に保存する。
+
+### マスターデータ（固定データ）
+
+- Pizza
+  - id
+  - name
+  - price
+  - toppings:string[]（デフォルトトッピングのTopping id）
+- Topping
+  - id
+  - name
+  - price
+
+### 注文データ（保存対象）
+
+注文時点のピザ名・金額などを保持する（後からマスターが変わっても注文内容は変わらない）。トッピングは注文とは別に、`orderId` で紐づけて保持する。
+
+- Order
+  - id
+  - pizzaId
+  - pizzaName
+  - pizzaPrice
+  - totalPrice（ピザ料金 + 追加トッピング料金）
+  - isCancel
+  - createdAt
+  - updatedAt
+- OrderTopping
+  - id
+  - orderId
+  - toppingId
+  - toppingName
+  - toppingPrice（デフォルトトッピングは0円）
+  - createdAt
+  - updatedAt
+
+## 操作
+
+- 注文追加(edit-order)
+  - ピザとトッピングを選んで注文を登録する
+- 注文変更(edit-order)
+  - 選択中の注文のピザ・トッピングを変更する
+- 注文取消(cancel-order)
+  - 取消済みの注文は取消できない
+- 注文復元(restore-order)
+  - 取消されていない注文は復元できない
+
+注文を選択していない間は、変更・取消・復元は押せない。
